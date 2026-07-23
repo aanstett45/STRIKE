@@ -1,0 +1,63 @@
+=== TRIANGLES ===
+
+Graphe: data/email-Enron.txt
+  n=36692 nnz=367662 deg_moy=10.0202
+    [spread] min=63.361 med=63.6598 max=73.7427 cv~0.16308
+    [spread] min=57.1932 med=59.8854 max=66.1544 cv~0.149638
+    [spread] min=58.2926 med=58.7985 max=59.4125 cv~0.019046
+    [spread] min=60.1991 med=60.8335 max=61.7172 cv~0.0249554
+    [spread] min=14.3353 med=14.4606 max=14.6294 cv~0.0203397
+    [spread] min=16.1695 med=16.4965 max=17.0382 cv~0.0526577
+    [spread] min=10.0065 med=10.0616 max=10.3587 cv~0.0350053
+    [spread] min=2.92879 med=3.09196 max=3.29796 cv~0.119396
+  [natural] T=727044 | mgus=63.6598 merge=59.8854 gallop=58.7985 finger=60.8335 (rr=0.806213) | cf=14.4606 cf_finger=16.4965 (rr=0.761098) | counts_ok=1
+    [spread] min=90.9138 med=91.3921 max=91.4276 cv~0.00562138
+    [spread] min=72.5235 med=73.6548 max=74.303 cv~0.0241606
+    [spread] min=59.5185 med=60.4932 max=60.9903 cv~0.0243306
+    [spread] min=62.4377 med=63.5001 max=63.7958 cv~0.0213884
+    [spread] min=14.1644 med=14.5399 max=14.6559 cv~0.0338034
+    [spread] min=16.4879 med=16.8572 max=16.9194 cv~0.0255974
+    [spread] min=9.27562 med=9.32075 max=9.43767 cv~0.0173851
+    [spread] min=2.97325 med=3.06079 max=3.18179 cv~0.0681333
+  [rcm] T=727044 | mgus=91.3921 merge=73.6548 gallop=60.4932 finger=63.5001 (rr=0.846669) | cf=14.5399 cf_finger=16.8572 (rr=0.760282) | counts_ok=1
+    [spread] min=89.7685 med=90.1033 max=91.1741 cv~0.0156002
+    [spread] min=72.8768 med=73.7215 max=75.6787 cv~0.0380074
+    [spread] min=64.6765 med=65.2021 max=66.4674 cv~0.0274671
+    [spread] min=66.4195 med=67.976 max=69.4265 cv~0.0442368
+    [spread] min=13.9411 med=14.1952 max=14.2464 cv~0.0215097
+    [spread] min=16.2505 med=16.4089 max=17.1495 cv~0.0547873
+    [spread] min=10.5773 med=10.6265 max=10.9839 cv~0.0382649
+    [spread] min=3.10567 med=3.20967 max=3.37467 cv~0.083809
+  [degree] T=727044 | mgus=90.1033 merge=73.7215 gallop=65.2021 finger=67.976 (rr=0.865289) | cf=14.1952 cf_finger=16.4089 (rr=0.761098) | counts_ok=1
+
+Graphe: gen:ba:20000:8
+  n=20000 nnz=319032 deg_moy=15.9516
+    [spread] min=22.7809 med=23.1959 max=23.4703 cv~0.0297215
+    [spread] min=23.6505 med=24.3107 max=25.0553 cv~0.0577814
+    [spread] min=23.391 med=23.9295 max=25.2265 cv~0.076708
+    [spread] min=24.7447 med=25.1302 max=25.5227 cv~0.0309604
+    [spread] min=6.16488 med=6.35175 max=6.61113 cv~0.0702562
+    [spread] min=7.45133 med=7.69987 max=7.93479 cv~0.0627879
+    [spread] min=6.10842 med=6.19454 max=6.44683 cv~0.0546315
+    [spread] min=1.658 med=1.77108 max=1.86192 cv~0.115136
+  [natural] T=9894 | mgus=23.1959 merge=24.3107 gallop=23.9295 finger=25.1302 (rr=0.874627) | cf=6.35175 cf_finger=7.69987 (rr=0.767393) | counts_ok=1
+    [spread] min=22.3344 med=22.5042 max=22.7407 cv~0.0180522
+    [spread] min=25.6061 med=25.7487 max=25.9431 cv~0.0130864
+    [spread] min=22.2462 med=22.3897 max=22.8849 cv~0.0285269
+    [spread] min=24.0875 med=24.3648 max=24.5933 cv~0.0207557
+    [spread] min=6.102 med=6.17871 max=6.65071 cv~0.0888064
+    [spread] min=7.36054 med=7.65058 max=7.79042 cv~0.0561887
+    [spread] min=3.61883 med=3.67313 max=3.84492 cv~0.0615509
+    [spread] min=1.66708 med=1.79046 max=2.05683 cv~0.217681
+  [rcm] T=9894 | mgus=22.5042 merge=25.7487 gallop=22.3897 finger=24.3648 (rr=0.890356) | cf=6.17871 cf_finger=7.65058 (rr=0.765777) | counts_ok=1
+    [spread] min=22.3138 med=22.4754 max=22.7478 cv~0.0193082
+    [spread] min=25.739 med=25.7956 max=26.0359 cv~0.011512
+    [spread] min=23.9905 med=24.5663 max=24.6521 cv~0.0269306
+    [spread] min=25.846 med=26.0139 max=26.3488 cv~0.019331
+    [spread] min=5.9385 med=6.21046 max=6.53404 cv~0.0958934
+    [spread] min=7.44146 med=7.84063 max=8.19754 cv~0.0964316
+    [spread] min=3.98442 med=4.02046 max=4.064 cv~0.0197945
+    [spread] min=1.71496 med=1.84196 max=2.00683 cv~0.158459
+  [degree] T=9894 | mgus=22.4754 merge=25.7956 gallop=24.5663 finger=26.0139 (rr=0.907664) | cf=6.21046 cf_finger=7.84063 (rr=0.767393) | counts_ok=1
+
+Sauvegarde: results/macbook/scheduling/dynamic64.csv

@@ -1,0 +1,20 @@
+# Build products
+build/
+finger_spgemm
+*.o
+
+# Python
+__pycache__/
+*.py[cod]
+
+# Editors and operating systems
+.DS_Store
+.vscode/
+.idea/
+*~
+
+# Temporary benchmark files
+*.tmp
+*.partial
+
+# Keep raw CSV and log files under results/ tracked.

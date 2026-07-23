@@ -1,0 +1,12 @@
+=== VERIFY ===
+(1 = identique a la reference, 0 = DIVERGENT)
+
+-- SpGEMM complet (reference: Gustavson SPA) --
+random n=512 d=0.02 b=0.6    stateless=1 NON_GARDE=0(diff=41685, survie=0.432528%) garde=1 garde+gallop=1
+band n=1024 w=16             stateless=1 NON_GARDE=0(diff=30255, survie=51.2772%) garde=1 garde+gallop=1
+random n=2048 d=0.01 b=0.6   stateless=1 NON_GARDE=0(diff=737582, survie=0.100907%) garde=1 garde+gallop=1
+
+-- Triangles (cross-check: Gustavson masque vs edge-merge) --
+er n=2000 deg=20       T=1313       merge=1 gallop=1 finger=1 finger_par=1 cf=1 cf_finger=1  [OK]
+ba n=2000 m=8          T=4207       merge=1 gallop=1 finger=1 finger_par=1 cf=1 cf_finger=1  [OK]
+band n=2000 w=12       T=131428     merge=1 gallop=1 finger=1 finger_par=1 cf=1 cf_finger=1  [OK]

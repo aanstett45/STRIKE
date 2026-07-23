@@ -1,0 +1,99 @@
+=== TRIANGLES ===
+
+Graphe: data/roadNet-CA.txt
+  n=1965206 nnz=5533214 deg_moy=2.81559
+    [spread] min=76.6884 med=77.7802 max=78.4696 cv~0.0229011
+    [spread] min=39.8727 med=40.4271 max=40.874 cv~0.0247689
+    [spread] min=39.9642 med=40.0385 max=40.3517 cv~0.00967715
+    [spread] min=47.7497 med=48.3378 max=49.2788 cv~0.031635
+    [spread] min=32.4225 med=33.4333 max=33.8881 cv~0.043836
+    [spread] min=36.1683 med=36.7938 max=37.1088 cv~0.0255603
+  [natural] T=120676 | mgus=77.7802 merge=40.4271 gallop=40.0385 finger=48.3378 (rr=0.301332) | cf=33.4333 cf_finger=36.7938 (rr=0.0970578) | counts_ok=1
+    [spread] min=67.0594 med=67.8733 max=68.7758 cv~0.0252873
+    [spread] min=31.469 med=32.0718 max=32.572 cv~0.0343916
+    [spread] min=30.4516 med=30.4628 max=30.7713 cv~0.0104951
+    [spread] min=36.4505 med=36.8442 max=37.0079 cv~0.0151279
+    [spread] min=29.2645 med=30.4012 max=31.9027 cv~0.086777
+    [spread] min=30.6996 med=31.4913 max=32.5056 cv~0.0573493
+  [rcm] T=120676 | mgus=67.8733 merge=32.0718 gallop=30.4628 finger=36.8442 (rr=0.340451) | cf=30.4012 cf_finger=31.4913 (rr=0.0632263) | counts_ok=1
+    [spread] min=72.4845 med=72.9295 max=74.6617 cv~0.029853
+    [spread] min=44.9151 med=45.5427 max=46.611 cv~0.0372379
+    [spread] min=44.7614 med=46.1348 max=46.4186 cv~0.0359201
+    [spread] min=54.6199 med=55.1448 max=56.4477 cv~0.0331468
+    [spread] min=32.5864 med=33.5714 max=34.9585 cv~0.0706567
+    [spread] min=36.4342 med=37.3328 max=37.6422 cv~0.0323565
+  [degree] T=120676 | mgus=72.9295 merge=45.5427 gallop=46.1348 finger=55.1448 (rr=0.442078) | cf=33.5714 cf_finger=37.3328 (rr=0.0970578) | counts_ok=1
+
+Graphe: data/email-Enron.txt
+  n=36692 nnz=367662 deg_moy=10.0202
+    [spread] min=61.6177 med=62.8622 max=63.6985 cv~0.0331008
+    [spread] min=56.8353 med=58.1863 max=59.2964 cv~0.0422974
+    [spread] min=55.5977 med=55.6679 max=55.798 cv~0.00359947
+    [spread] min=58.2488 med=58.277 max=58.4769 cv~0.00391522
+    [spread] min=13.8761 med=14.0183 max=14.4046 cv~0.0377036
+    [spread] min=15.9861 med=16.1576 max=16.7714 cv~0.0485993
+  [natural] T=727044 | mgus=62.8622 merge=58.1863 gallop=55.6679 finger=58.277 (rr=0.806213) | cf=14.0183 cf_finger=16.1576 (rr=0.761098) | counts_ok=1
+    [spread] min=88.4747 med=89.1287 max=90.038 cv~0.0175397
+    [spread] min=71.532 med=71.8596 max=72.7535 cv~0.0169996
+    [spread] min=58.1519 med=58.2485 max=58.6793 cv~0.00905388
+    [spread] min=60.6776 med=60.7521 max=60.8625 cv~0.00304312
+    [spread] min=13.9634 med=14.2289 max=14.5183 cv~0.0389935
+    [spread] min=16.053 med=16.2823 max=16.4187 cv~0.0224631
+  [rcm] T=727044 | mgus=89.1287 merge=71.8596 gallop=58.2485 finger=60.7521 (rr=0.846669) | cf=14.2289 cf_finger=16.2823 (rr=0.760282) | counts_ok=1
+    [spread] min=86.7297 med=87.5558 max=88.2232 cv~0.0170582
+    [spread] min=72.4877 med=73.7787 max=75.5324 cv~0.0412681
+    [spread] min=63.4816 med=63.5633 max=63.7257 cv~0.00384131
+    [spread] min=65.3748 med=65.568 max=66.0123 cv~0.00972401
+    [spread] min=13.9405 med=14.2253 max=14.3821 cv~0.0310422
+    [spread] min=16.0229 med=16.1808 max=16.6432 cv~0.0383375
+  [degree] T=727044 | mgus=87.5558 merge=73.7787 gallop=63.5633 finger=65.568 (rr=0.865289) | cf=14.2253 cf_finger=16.1808 (rr=0.761098) | counts_ok=1
+
+Graphe: gen:band:20000:16
+  n=20000 nnz=639728 deg_moy=31.9864
+    [spread] min=10.017 med=10.4277 max=10.5251 cv~0.0487203
+    [spread] min=7.01671 med=7.34021 max=7.69908 cv~0.092964
+    [spread] min=5.87396 med=5.9315 max=6.44021 cv~0.0954647
+    [spread] min=7.08596 med=7.114 max=8.07958 cv~0.139672
+    [spread] min=3.507 med=3.70283 max=3.96367 cv~0.123329
+    [spread] min=4.38579 med=4.49792 max=5.06475 cv~0.150949
+  [natural] T=2398640 | mgus=10.4277 merge=7.34021 gallop=5.9315 finger=7.114 (rr=0.937477) | cf=3.70283 cf_finger=4.49792 (rr=0.875047) | counts_ok=1
+    [spread] min=10.1532 med=10.2405 max=10.3265 cv~0.0169223
+    [spread] min=7.03183 med=7.25775 max=7.87563 cv~0.116261
+    [spread] min=5.82046 med=6.09433 max=6.29358 cv~0.0776337
+    [spread] min=6.95708 med=7.11763 max=7.34383 cv~0.0543368
+    [spread] min=3.66567 med=3.82037 max=4.11883 cv~0.118618
+    [spread] min=4.36429 med=4.43363 max=4.82567 cv~0.104063
+  [rcm] T=2398640 | mgus=10.2405 merge=7.25775 gallop=6.09433 finger=7.11763 (rr=0.937477) | cf=3.82037 cf_finger=4.43363 (rr=0.875047) | counts_ok=1
+    [spread] min=10.2024 med=10.4238 max=10.46 cv~0.024715
+    [spread] min=7.01654 med=7.07842 max=7.57042 cv~0.0782484
+    [spread] min=5.93754 med=6.05046 max=6.18213 cv~0.0404239
+    [spread] min=7.18867 med=7.47708 max=7.70325 cv~0.0688213
+    [spread] min=4.13096 med=4.29488 max=4.7095 cv~0.134705
+    [spread] min=4.43671 med=4.66737 max=5.30546 cv~0.186132
+  [degree] T=2398640 | mgus=10.4238 merge=7.07842 gallop=6.05046 finger=7.47708 (rr=0.93748) | cf=4.29488 cf_finger=4.66737 (rr=0.875047) | counts_ok=1
+
+Graphe: gen:ba:20000:8
+  n=20000 nnz=319032 deg_moy=15.9516
+    [spread] min=22.3435 med=22.6445 max=23.1883 cv~0.0373031
+    [spread] min=22.9797 med=23.0305 max=23.1598 cv~0.0078175
+    [spread] min=22.8225 med=22.9883 max=23.0802 cv~0.0112105
+    [spread] min=24.4638 med=24.472 max=24.7225 cv~0.0105716
+    [spread] min=5.79925 med=6.28204 max=6.67575 cv~0.139525
+    [spread] min=7.33171 med=7.46883 max=8.13379 cv~0.107391
+  [natural] T=9894 | mgus=22.6445 merge=23.0305 gallop=22.9883 finger=24.472 (rr=0.874627) | cf=6.28204 cf_finger=7.46883 (rr=0.767393) | counts_ok=1
+    [spread] min=21.454 med=21.6181 max=22.0321 cv~0.0267407
+    [spread] min=25.3307 med=25.6928 max=26.986 cv~0.0644262
+    [spread] min=21.7195 med=21.8931 max=22.1076 cv~0.0177301
+    [spread] min=23.6977 med=23.857 max=23.9797 cv~0.0118169
+    [spread] min=5.72888 med=5.88379 max=6.62208 cv~0.151808
+    [spread] min=7.40062 med=7.41742 max=8.11442 cv~0.0962319
+  [rcm] T=9894 | mgus=21.6181 merge=25.6928 gallop=21.8931 finger=23.857 (rr=0.890356) | cf=5.88379 cf_finger=7.41742 (rr=0.765777) | counts_ok=1
+    [spread] min=21.6241 med=21.7858 max=22.2467 cv~0.0285795
+    [spread] min=25.7213 med=25.8383 max=26.0169 cv~0.0114397
+    [spread] min=23.4401 med=23.6145 max=23.7066 cv~0.0112854
+    [spread] min=25.1591 med=25.3808 max=25.415 cv~0.0100798
+    [spread] min=5.88821 med=6.505 max=6.63717 cv~0.115136
+    [spread] min=7.38383 med=7.82083 max=8.65083 cv~0.162003
+  [degree] T=9894 | mgus=21.7858 merge=25.8383 gallop=23.6145 finger=25.3808 (rr=0.907664) | cf=6.505 cf_finger=7.82083 (rr=0.767393) | counts_ok=1
+
+Sauvegarde: results/macbook/threads/tri_T1.csv
