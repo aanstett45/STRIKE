@@ -1,3 +1,5 @@
+[![DOI](https://zenodo.org/badge/1113783061.svg)](https://doi.org/10.5281/zenodo.21507449)
+
 # Cross-row Pointer Persistence in Merge-based Sparse Matrix Products
 
 This repository contains the source code, experiment scripts, raw benchmark outputs, and figure-generation utilities for the article **“Cross-row pointer persistence in merge-based sparse matrix products.”**
