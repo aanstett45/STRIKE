@@ -3,7 +3,7 @@ Measurement environment — Raspberry Pi
 
 Known configuration
 -------------------
-Model: Raspberry Pi 4 Model B
+Model: Raspberry Pi 3 Model B +
 Memory: 4 GB
 
 Capture time
