@@ -27,9 +27,6 @@ Hardware:
       Memory: 24 GB
       System Firmware Version: 13822.81.10
       OS Loader Version: 11881.140.96
-      Serial Number (system): GRKJXX4GJK
-      Hardware UUID: A8ADF1C2-FF7F-546F-A347-B2701CC5876B
-      Provisioning UDID: 00006040-000C00963A31801C
       Activation Lock Status: Enabled
 
 Software:
