@@ -71,4 +71,3 @@ Measurement conditions
 Power: connected to AC power
 Sleep: disabled during measurements
 Default schedule: OMP_SCHEDULE=static
-Additional notes: EDIT THIS LINE BEFORE RELEASE
