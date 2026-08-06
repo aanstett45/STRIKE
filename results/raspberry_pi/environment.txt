@@ -1,14 +1,14 @@
 Measurement environment — Raspberry Pi
 ======================================
 
-Known configuration
--------------------
-Model: Raspberry Pi 3 Model B +
-Memory: 4 GB
+Capture time (UTC)
+------------------
+2026-07-09T01:35:15Z
 
-Capture time
-------------
-Thu  9 Jul 02:39:39 CEST 2026
+Source identity
+---------------
+Git commit: not available
+SHA-256 src/finger_spgemm.cpp: da98b5fab99935ba5bfefdefea751fe64320c80c00aa5741c542f72640a62b0c
 
 Device model
 ------------
@@ -28,9 +28,10 @@ HOME_URL="http://www.raspbian.org/"
 SUPPORT_URL="http://www.raspbian.org/RaspbianForums"
 BUG_REPORT_URL="http://www.raspbian.org/RaspbianBugs"
 
-uname -a
---------
-Linux raspciad 6.12.47+rpt-rpi-v7 #1 SMP Raspbian 1:6.12.47-1+rpt1 (2025-09-16) armv7l GNU/Linux
+Kernel (hostname omitted)
+-------------------------
+Linux 6.12.47+rpt-rpi-v7 armv7l
+Userland bits: 32
 
 lscpu
 -----
@@ -71,7 +72,7 @@ Vulnerability Vmscape:                   Not affected
 Memory
 ------
                total        used        free      shared  buff/cache   available
-Mem:           921Mi       288Mi       176Mi        33Mi       543Mi       633Mi
+Mem:           921Mi       268Mi       204Mi        22Mi       523Mi       652Mi
 Swap:          920Mi          0B       920Mi
 
 g++ --version
@@ -84,15 +85,16 @@ warranty; not even for MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 
 CPU governors
 -------------
-/sys/devices/system/cpu/cpu0/cpufreq/scaling_governor: ondemand
-/sys/devices/system/cpu/cpu1/cpufreq/scaling_governor: ondemand
-/sys/devices/system/cpu/cpu2/cpufreq/scaling_governor: ondemand
-/sys/devices/system/cpu/cpu3/cpufreq/scaling_governor: ondemand
+Expected CPU governor: performance
+/sys/devices/system/cpu/cpu0/cpufreq/scaling_governor: performance
+/sys/devices/system/cpu/cpu1/cpufreq/scaling_governor: performance
+/sys/devices/system/cpu/cpu2/cpufreq/scaling_governor: performance
+/sys/devices/system/cpu/cpu3/cpufreq/scaling_governor: performance
 
-Throttling status
------------------
+Throttling and temperature
+--------------------------
 throttled=0x0
-temp=45.1'C
+temp=49.9'C
 
 Compilation command
 -------------------
@@ -100,8 +102,9 @@ g++ -O3 -march=native -fopenmp -std=c++17 src/finger_spgemm.cpp -o build/finger_
 
 Measurement conditions
 ----------------------
-CPU governor required: performance
 OMP_SCHEDULE=static
 OMP_PROC_BIND=close
 OMP_PLACES=cores
-Power supply and cooling notes: EDIT THIS LINE BEFORE RELEASE
+Power supply: 5V, 0.5-0.9A, ~3.5W
+Cooling: Total transparent case, one 30mm fan blowing on processing unit
+Notes: not provided

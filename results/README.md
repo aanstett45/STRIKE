@@ -1,8 +1,28 @@
 # Raw benchmark results
 
-Store unmodified CSV files and standard-output logs in this directory.
+This directory is intentionally empty in the corrected rerun package, apart from `.gitkeep` files. Do not restore pre-v1.0.1 measurements: the synthetic generators, RCM ordering, CSV schema, and Pi measurement controls changed.
 
-- `macbook/`: Apple M4 Pro, 24 GB, macOS 15.7.4 (24G517)
-- `raspberry_pi/`: Raspberry Pi 4 Model B, 4 GB
+The complete scripts generate the following files.
 
-Each benchmark log must preserve every `[spread]` line. Do not replace raw files with spreadsheets, rounded summaries, manually sorted data, or copied table values.
+## MacBook
+
+- `environment.txt`
+- `verify.log`
+- `triangles_real.csv` and `.log`
+- `adaptive.csv` and `.log`
+- `fullspgemm.csv` and `.log`
+- `full_wide.csv` and `.log`
+- `threads/tri_T{1,2,4,8,12}.csv` and `.log`
+- `scheduling/{static,dynamic64,guided}.csv` and `.log`
+
+## Raspberry Pi 3 B+
+
+- `environment.txt`
+- `environment_after.txt`
+- `verify.log`
+- `triangles_real.csv` and `.log`
+- `adaptive.csv` and `.log`
+- `fullspgemm_pi.csv` and `.log`
+- `threads/tri_T{1,2,4}.csv` and `.log`
+
+Keep raw CSV and logs unmodified. Run `python3 scripts/validate_results.py --platform all --compare-platforms` after both campaigns.

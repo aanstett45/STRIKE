@@ -1,0 +1,51 @@
+=== TRIANGLES ===
+
+Graphe: data/roadNet-CA.txt
+  n=1965206 nnz=5533214 deg_moy=2.81559 fingerprint=c0d6898a551b5f71
+    [spread] min=72.1505 med=72.1895 max=72.833 range_over_median=0.0094537
+    [spread] min=38.7398 med=39.7199 max=40.3484 range_over_median=0.0404982
+    [spread] min=38.95 med=39.1718 max=39.6336 range_over_median=0.0174509
+    [spread] min=47.8218 med=49.5299 max=51.3702 range_over_median=0.0716419
+    [spread] min=32.5266 med=32.9464 max=33.3912 range_over_median=0.0262422
+    [spread] min=36.2877 med=36.7425 max=37.3936 range_over_median=0.0301003
+  [natural] T=120676 | mgus=72.1895 merge=39.7199 gallop=39.1718 finger=49.5299 (rr=0.301332) | cf=32.9464 cf_finger=36.7425 (rr=0.0970578) | counts_ok=1
+    [spread] min=69.6645 med=70.0601 max=70.4284 range_over_median=0.0109031
+    [spread] min=31.6712 med=32.1254 max=32.3077 range_over_median=0.0198156
+    [spread] min=32.7213 med=32.8195 max=33.3063 range_over_median=0.0178261
+    [spread] min=38.3547 med=38.6822 max=38.956 range_over_median=0.0155455
+    [spread] min=29.2189 med=29.3451 max=29.4753 range_over_median=0.00873794
+    [spread] min=32.1131 med=32.7334 max=33.192 range_over_median=0.0329608
+  [rcm] T=120676 | mgus=70.0601 merge=32.1254 gallop=32.8195 finger=38.6822 (rr=0.340433) | cf=29.3451 cf_finger=32.7334 (rr=0.0631623) | counts_ok=1
+    [spread] min=72.5532 med=73.0449 max=74.1066 range_over_median=0.0212666
+    [spread] min=44.1668 med=44.2802 max=45.7873 range_over_median=0.0365965
+    [spread] min=45.4546 med=45.9695 max=47.7779 range_over_median=0.0505398
+    [spread] min=56.0727 med=57.377 max=58.092 range_over_median=0.0351927
+    [spread] min=32.4918 med=32.635 max=32.9345 range_over_median=0.0135642
+    [spread] min=36.452 med=36.7676 max=37.0285 range_over_median=0.0156784
+  [degree] T=120676 | mgus=73.0449 merge=44.2802 gallop=45.9695 finger=57.377 (rr=0.442078) | cf=32.635 cf_finger=36.7676 (rr=0.0970578) | counts_ok=1
+
+Graphe: data/email-Enron.txt
+  n=36692 nnz=367662 deg_moy=10.0202 fingerprint=e020b121d9c2b4d3
+    [spread] min=63.0429 med=63.4625 max=63.8912 range_over_median=0.0133668
+    [spread] min=56.9511 med=57.2162 max=60.3838 range_over_median=0.0599947
+    [spread] min=57.9775 med=58.2062 max=58.8071 range_over_median=0.0142532
+    [spread] min=59.9352 med=60.958 max=61.0273 range_over_median=0.0179153
+    [spread] min=14.4188 med=14.5673 max=14.6756 range_over_median=0.0176279
+    [spread] min=16.4452 med=16.9232 max=17.0712 range_over_median=0.036993
+  [natural] T=727044 | mgus=63.4625 merge=57.2162 gallop=58.2062 finger=60.958 (rr=0.806213) | cf=14.5673 cf_finger=16.9232 (rr=0.761098) | counts_ok=1
+    [spread] min=89.6841 med=90.1256 max=90.3848 range_over_median=0.00777434
+    [spread] min=72.5478 med=73.3058 max=74.2165 range_over_median=0.0227631
+    [spread] min=60.4075 med=60.9526 max=61.4706 range_over_median=0.0174425
+    [spread] min=63.0485 med=63.1209 max=63.7815 range_over_median=0.0116126
+    [spread] min=14.2557 med=14.6083 max=14.7521 range_over_median=0.0339846
+    [spread] min=16.8928 med=16.9588 max=17.2088 range_over_median=0.0186335
+  [rcm] T=727044 | mgus=90.1256 merge=73.3058 gallop=60.9526 finger=63.1209 (rr=0.845184) | cf=14.6083 cf_finger=16.9588 (rr=0.760199) | counts_ok=1
+    [spread] min=90.118 med=90.3098 max=90.508 range_over_median=0.004318
+    [spread] min=76.4827 med=77.4445 max=78.684 range_over_median=0.0284241
+    [spread] min=65.5462 med=66.6215 max=66.8229 range_over_median=0.0191636
+    [spread] min=66.7063 med=67.0848 max=67.572 range_over_median=0.0129041
+    [spread] min=14.0443 med=14.3089 max=14.3613 range_over_median=0.0221511
+    [spread] min=16.4089 med=16.8427 max=16.9392 range_over_median=0.031485
+  [degree] T=727044 | mgus=90.3098 merge=77.4445 gallop=66.6215 finger=67.0848 (rr=0.865289) | cf=14.3089 cf_finger=16.8427 (rr=0.761098) | counts_ok=1
+
+Sauvegarde: results/macbook/triangles_real.csv

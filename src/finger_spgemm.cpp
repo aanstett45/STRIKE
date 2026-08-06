@@ -26,12 +26,12 @@
 // la comparaison d'ordonnancements demandee par les relecteurs. Chaque
 // benchmark comporte desormais un echauffement non mesure et imprime sa
 // dispersion (min/med/max) sur stdout.
-// Compilation :  g++ -O3 -march=native -fopenmp -std=c++17 \
-//                    finger_spgemm.cpp -o finger_spgemm
+// Compilation : g++ -O3 -march=native -fopenmp -std=c++17
+//               finger_spgemm.cpp -o finger_spgemm
 //
 // Commandes :
 //   finger_spgemm verify
-//   finger_spgemm fullspgemm <out.csv> [n=2048] [trials=3] [runs=3]
+//   finger_spgemm fullspgemm <out.csv> [n=2048] [trials=3] [runs=3] [--max-band W]
 //   finger_spgemm triangles  <out.csv> [--runs R] [--threads T] <graphe...>
 //   finger_spgemm adaptive   <out.csv> [--sample-pct P] <graphe...>
 //
@@ -54,6 +54,8 @@
 #include <numeric>
 #include <queue>
 #include <random>
+#include <limits>
+#include <stdexcept>
 #include <sstream>
 #include <string>
 #include <tuple>
@@ -174,6 +176,7 @@ struct FingerStats {
 static inline long long guarded_start(const int* cidx, long long cb,
                                       long long ce, long long start, int rmin,
                                       FingerStats& st) {
+    (void)ce;
     st.queries++;
     if (start > cb && cidx[start - 1] >= rmin) {
         st.rewinds++;
@@ -191,6 +194,7 @@ static inline long long intersect_count(const int* a, long long ab, long long ae
                                         const int* b, long long bb, long long be,
                                         long long iy_start, bool gallop,
                                         long long* iy_end = nullptr) {
+    (void)bb;
     long long ix = ab, iy = iy_start, c = 0;
     while (ix < ae && iy < be) {
         int x = a[ix], y = b[iy];
@@ -212,6 +216,7 @@ static inline double intersect_dot(const int* a, const double* av,
                                    long long bb, long long be,
                                    long long iy_start, bool gallop,
                                    long long* iy_end = nullptr) {
+    (void)bb;
     long long ix = ab, iy = iy_start;
     double s = 0;
     while (ix < ae && iy < be) {
@@ -298,6 +303,52 @@ static CSR spgemm_merge(const CSR& A, const CSR& Bcsc, int mode, bool gallop,
 }
 
 // ============================================================================
+// RANDOMNESS AND INPUT FINGERPRINTS
+// ============================================================================
+
+// std::uniform_int_distribution and std::shuffle are not required to produce
+// the same sequence across standard-library implementations.  The helpers
+// below use only the specified mt19937_64 engine output and integer arithmetic,
+// so generated inputs are bit-for-bit reproducible with libc++ and libstdc++.
+static uint64_t portable_bounded(mt19937_64& rng, uint64_t bound) {
+    if (bound == 0) throw invalid_argument("portable_bounded: bound must be > 0");
+    const uint64_t threshold = (uint64_t)(-bound) % bound;
+    for (;;) {
+        const uint64_t r = rng();
+        if (r >= threshold) return r % bound;
+    }
+}
+
+template <class T>
+static void portable_shuffle(vector<T>& values, mt19937_64& rng) {
+    for (size_t i = values.size(); i > 1; --i) {
+        const size_t j = (size_t)portable_bounded(rng, i);
+        swap(values[i - 1], values[j]);
+    }
+}
+
+static uint64_t fnv1a_mix_u64(uint64_t h, uint64_t x) {
+    for (int b = 0; b < 8; ++b) {
+        h ^= (x & 0xffu);
+        h *= UINT64_C(1099511628211);
+        x >>= 8;
+    }
+    return h;
+}
+
+static string structure_fingerprint(const CSR& A) {
+    uint64_t h = UINT64_C(14695981039346656037);
+    h = fnv1a_mix_u64(h, (uint64_t)A.n);
+    h = fnv1a_mix_u64(h, (uint64_t)A.m);
+    h = fnv1a_mix_u64(h, (uint64_t)A.nnz());
+    for (long long x : A.indptr) h = fnv1a_mix_u64(h, (uint64_t)x);
+    for (int x : A.idx) h = fnv1a_mix_u64(h, (uint64_t)(uint32_t)x);
+    ostringstream out;
+    out << hex << setfill('0') << setw(16) << h;
+    return out.str();
+}
+
+// ============================================================================
 // GRAPHES (comptage de triangles) : CSR symétrique, simple, sans boucle
 // ============================================================================
 
@@ -315,16 +366,24 @@ static CSR make_graph(int n, vector<pair<int,int>>& edges) {
 }
 
 static CSR gen_er(int n, double avg_deg, int seed = 42) {
-    mt19937_64 rng(seed);
+    if (n <= 0) throw invalid_argument("gen:er requires n > 0");
+    if (!(avg_deg >= 0.0) || !isfinite(avg_deg))
+        throw invalid_argument("gen:er requires a finite average degree >= 0");
+    mt19937_64 rng((uint64_t)(uint32_t)seed);
     long long m = (long long)(n * avg_deg / 2);
-    vector<pair<int,int>> e; e.reserve(m);
-    uniform_int_distribution<int> d(0, n - 1);
-    for (long long k = 0; k < m; k++) e.push_back({d(rng), d(rng)});
+    vector<pair<int,int>> e; e.reserve((size_t)max(0LL, m));
+    for (long long k = 0; k < m; k++) {
+        int u = (int)portable_bounded(rng, (uint64_t)n);
+        int v = (int)portable_bounded(rng, (uint64_t)n);
+        e.push_back({u, v});
+    }
     return make_graph(n, e);
 }
 
 static CSR gen_ba(int n, int madd, int seed = 42) {
-    mt19937_64 rng(seed);
+    if (madd <= 0) throw invalid_argument("gen:ba requires m > 0");
+    if (n <= madd + 1) throw invalid_argument("gen:ba requires n > m + 1");
+    mt19937_64 rng((uint64_t)(uint32_t)seed);
     vector<pair<int,int>> e;
     vector<int> targets; // liste à répétition (attachement préférentiel)
     int m0 = madd + 1;
@@ -334,7 +393,8 @@ static CSR gen_ba(int n, int madd, int seed = 42) {
         }
     for (int v = m0; v < n; v++) {
         for (int k = 0; k < madd; k++) {
-            int u = targets[uniform_int_distribution<size_t>(0, targets.size()-1)(rng)];
+            size_t pos = (size_t)portable_bounded(rng, (uint64_t)targets.size());
+            int u = targets[pos];
             e.push_back({u, v});
             targets.push_back(u); targets.push_back(v);
         }
@@ -343,6 +403,8 @@ static CSR gen_ba(int n, int madd, int seed = 42) {
 }
 
 static CSR gen_band_graph(int n, int w) {
+    if (n <= 0) throw invalid_argument("gen:band requires n > 0");
+    if (w <= 0) throw invalid_argument("gen:band requires w > 0");
     vector<pair<int,int>> e;
     for (int i = 0; i < n; i++)
         for (int d = 1; d <= w && i + d < n; d++) e.push_back({i, i + d});
@@ -428,7 +490,9 @@ static vector<int> order_rcm(const CSR& G) {
     vector<int> nodes(n);
     iota(nodes.begin(), nodes.end(), 0);
     sort(nodes.begin(), nodes.end(),
-         [&](int a, int b) { return deg[a] < deg[b]; });
+         [&](int a, int b) {
+             return make_pair(deg[a], a) < make_pair(deg[b], b);
+         });
     vector<int> nb;
     for (int s : nodes) {
         if (vis[s]) continue;
@@ -440,7 +504,9 @@ static vector<int> order_rcm(const CSR& G) {
             for (long long e = G.indptr[u]; e < G.indptr[(size_t)u + 1]; e++)
                 if (!vis[G.idx[e]]) nb.push_back(G.idx[e]);
             sort(nb.begin(), nb.end(),
-                 [&](int a, int b) { return deg[a] < deg[b]; });
+                 [&](int a, int b) {
+                     return make_pair(deg[a], a) < make_pair(deg[b], b);
+                 });
             for (int v : nb) if (!vis[v]) { vis[v] = 1; q.push(v); }
         }
     }
@@ -628,20 +694,24 @@ static long long tri_cf(const CSR& G_deg_ordered, int mode, bool gallop, int T,
 // benchmark, sans changer le schema des CSV.
 static double g_last_min = 0, g_last_max = 0;
 static double bench_ms(const function<void()>& f, int runs) {
+    if (runs <= 0) throw invalid_argument("runs must be > 0");
     vector<double> t;
+    t.reserve((size_t)runs);
     f(); // echauffement (non mesure)
     for (int r = 0; r < runs; r++) {
-        auto t0 = chrono::high_resolution_clock::now();
+        auto t0 = chrono::steady_clock::now();
         f();
-        auto t1 = chrono::high_resolution_clock::now();
+        auto t1 = chrono::steady_clock::now();
         t.push_back(chrono::duration<double, milli>(t1 - t0).count());
     }
     sort(t.begin(), t.end());
     g_last_min = t.front(); g_last_max = t.back();
-    double med = t[t.size() / 2];
+    const size_t mid = t.size() / 2;
+    double med = (t.size() % 2) ? t[mid] : 0.5 * (t[mid - 1] + t[mid]);
     cout << "    [spread] min=" << g_last_min << " med=" << med
          << " max=" << g_last_max
-         << " cv~" << (med > 0 ? (g_last_max - g_last_min) / med : 0) << endl;
+         << " range_over_median="
+         << (med > 0 ? (g_last_max - g_last_min) / med : 0) << endl;
     return med;
 }
 
@@ -650,25 +720,30 @@ static double bench_ms(const function<void()>& f, int runs) {
 // ============================================================================
 
 static CSR gen_beta_matrix(int n, double density, double beta, int seed) {
-    mt19937 rng(seed);
+    if (n <= 0) throw invalid_argument("beta matrix requires n > 0");
+    if (!(density > 0.0 && density <= 1.0) || !isfinite(density))
+        throw invalid_argument("density must be finite and in (0, 1]");
+    if (!(beta >= 0.0 && beta <= 1.0) || !isfinite(beta))
+        throw invalid_argument("beta must be finite and in [0, 1]");
+    mt19937_64 rng((uint64_t)(uint32_t)seed);
     int per_col = max(1, (int)(n * density));
     vector<tuple<int,int,double>> t;
     vector<int> prev;
-    uniform_int_distribution<int> d(0, n - 1);
-    for (int k = 0; k < per_col; k++) prev.push_back(d(rng));
+    for (int k = 0; k < per_col; k++)
+        prev.push_back((int)portable_bounded(rng, (uint64_t)n));
     sort(prev.begin(), prev.end());
     prev.erase(unique(prev.begin(), prev.end()), prev.end());
     for (int r : prev) t.push_back({r, 0, 1.0});
     for (int j = 1; j < n; j++) {
         vector<int> curr;
         int keep = (int)(beta * prev.size());
-        shuffle(prev.begin(), prev.end(), rng);
+        portable_shuffle(prev, rng);
         for (int k = 0; k < keep && k < (int)prev.size(); k++)
             curr.push_back(prev[k]);
-        vector<char> in(n, 0);
+        vector<char> in((size_t)n, 0);
         for (int x : curr) in[x] = 1;
         while ((int)curr.size() < (int)prev.size() && (int)curr.size() < n) {
-            int r = d(rng);
+            int r = (int)portable_bounded(rng, (uint64_t)n);
             if (!in[r]) { in[r] = 1; curr.push_back(r); }
         }
         sort(curr.begin(), curr.end());
@@ -680,6 +755,8 @@ static CSR gen_beta_matrix(int n, double density, double beta, int seed) {
 }
 
 static CSR gen_band_matrix(int n, int w) {
+    if (n <= 0) throw invalid_argument("band matrix requires n > 0");
+    if (w <= 0) throw invalid_argument("band width must be > 0");
     vector<tuple<int,int,double>> t;
     for (int i = 0; i < n; i++)
         for (int k = i; k < min(n, i + w); k++) t.push_back({i, k, 1.0});
@@ -718,6 +795,8 @@ static void experiment_verify() {
         CSR wrong = spgemm_merge(c.A, Bcsc, 1, false);
         double surv = ref.nnz() ? (double)wrong.nnz() / ref.nnz() : 0.0;
         cout << left << setw(28) << c.name
+             << " fpA=" << structure_fingerprint(c.A)
+             << " fpB=" << structure_fingerprint(c.B)
              << " stateless=" << ok0
              << " NON_GARDE=" << ok1 << "(diff=" << d1
              << ", survie=" << surv * 100 << "%)"
@@ -743,7 +822,9 @@ static void experiment_verify() {
         long long t_cff = tri_cf(Gd, 2, true, 1);
         bool all_ok = (t_m == t_ref && t_g == t_ref && t_f == t_ref &&
                        t_fp == t_ref && t_cf == t_ref && t_cff == t_ref);
-        cout << left << setw(22) << name << " T=" << setw(10) << t_ref
+        cout << left << setw(22) << name
+             << " fp=" << structure_fingerprint(G)
+             << " T=" << setw(10) << t_ref
              << " merge=" << (t_m == t_ref) << " gallop=" << (t_g == t_ref)
              << " finger=" << (t_f == t_ref) << " finger_par=" << (t_fp == t_ref)
              << " cf=" << (t_cf == t_ref) << " cf_finger=" << (t_cff == t_ref)
@@ -752,10 +833,14 @@ static void experiment_verify() {
 }
 
 static void experiment_fullspgemm(const string& out, int n, int trials,
-                                  int runs) {
+                                  int runs, int max_band) {
     cout << "=== FULLSPGEMM (positionnement) ===" << endl;
+    if (n <= 0 || trials <= 0 || runs <= 0)
+        throw invalid_argument("fullspgemm requires n, trials, and runs > 0");
+    if (max_band <= 0) throw invalid_argument("--max-band must be > 0");
     ofstream csv(out);
-    csv << "kind,param,n,nnz,rho_A,rho_B,"
+    if (!csv.is_open()) throw runtime_error("Cannot create output CSV: " + out);
+    csv << "kind,param,n,nnz,rho_A,rho_B,fingerprint_A,fingerprint_B,"
         << "t_gustavson_ms,t_stateless_ms,t_stateless_gallop_ms,"
         << "t_guarded_ms,t_guarded_gallop_ms,"
         << "ratio_stateless_over_guarded,ratio_stateless_over_guarded_gallop,"
@@ -783,6 +868,7 @@ static void experiment_fullspgemm(const string& out, int n, int trials,
 
         csv << kind << "," << param << "," << A.n << "," << A.nnz() << ","
             << rho_A << "," << rho_B << ","
+            << structure_fingerprint(A) << "," << structure_fingerprint(B) << ","
             << t_gus << "," << t_sl << "," << t_slg << ","
             << t_gd << "," << t_gdg << ","
             << (t_sl / t_gd) << "," << (t_sl / t_gdg) << ","
@@ -801,14 +887,14 @@ static void experiment_fullspgemm(const string& out, int n, int trials,
             run_case("beta", beta, A, B);
         }
     }
-    // 128-512 : question du croisement avec Gustavson (section 7.5 de
-    // l'article) ; sur Raspberry Pi, s'arreter a 64 est acceptable.
     for (int w : {16, 32, 64, 128, 256, 512}) {
+        if (w > max_band) continue;
         CSR A = gen_band_matrix(n, w);
         CSR B = gen_band_matrix(n, w);
         run_case("band", w, A, B);
     }
     csv.close();
+    if (!csv) throw runtime_error("Failed while writing output CSV: " + out);
     cout << "Sauvegarde: " << out << endl;
 }
 
@@ -816,8 +902,12 @@ static void experiment_triangles(const string& out,
                                  const vector<string>& graph_args,
                                  int runs, int T) {
     cout << "=== TRIANGLES ===" << endl;
+    if (runs <= 0 || T <= 0)
+        throw invalid_argument("triangles requires runs and threads > 0");
+    if (graph_args.empty()) throw invalid_argument("triangles requires at least one graph");
     ofstream csv(out);
-    csv << "graph,ordering,n,nnz,avg_deg,triangles,"
+    if (!csv.is_open()) throw runtime_error("Cannot create output CSV: " + out);
+    csv << "graph,ordering,n,nnz,avg_deg,graph_fingerprint,triangles,"
         << "t_masked_gustavson_ms,t_edge_merge_ms,t_edge_gallop_ms,"
         << "t_edge_finger_ms,t_cf_gallop_ms,t_cf_finger_ms,"
         << "rewind_rate_edge_finger,rewind_rate_cf_finger,"
@@ -828,7 +918,8 @@ static void experiment_triangles(const string& out,
         cout << "\nGraphe: " << arg << endl;
         CSR G0 = load_graph_arg(arg);
         cout << "  n=" << G0.n << " nnz=" << G0.nnz()
-             << " deg_moy=" << (double)G0.nnz() / G0.n << endl;
+             << " deg_moy=" << (double)G0.nnz() / G0.n
+             << " fingerprint=" << structure_fingerprint(G0) << endl;
 
         struct Ord { const char* name; CSR G; };
         vector<Ord> ords;
@@ -865,7 +956,8 @@ static void experiment_triangles(const string& out,
             double rr_c = st_cf.queries ? (double)st_cf.rewinds / st_cf.queries : 0;
 
             csv << arg << "," << o.name << "," << G.n << "," << G.nnz() << ","
-                << (double)G.nnz() / G.n << "," << c_ref << ","
+                << (double)G.nnz() / G.n << "," << structure_fingerprint(G)
+                << "," << c_ref << ","
                 << t_mg << "," << t_m << "," << t_g << "," << t_f << ","
                 << t_cg << "," << t_cf << ","
                 << rr_e << "," << rr_c << ","
@@ -891,23 +983,32 @@ static void experiment_adaptive(const string& out,
                                 double sample_pct, double threshold,
                                 int runs) {
     cout << "=== ADAPTIVE (rewind rate comme predicteur) ===" << endl;
+    if (!(sample_pct > 0.0 && sample_pct <= 100.0) || !isfinite(sample_pct))
+        throw invalid_argument("--sample-pct must be finite and in (0, 100]");
+    if (!(threshold >= 0.0 && threshold <= 1.0) || !isfinite(threshold))
+        throw invalid_argument("--threshold must be finite and in [0, 1]");
+    if (runs <= 0) throw invalid_argument("adaptive requires runs > 0");
+    if (graph_args.empty()) throw invalid_argument("adaptive requires at least one graph");
     ofstream csv(out);
-    csv << "graph,sample_pct,sampled_rewind_rate,choice,threshold,"
+    if (!csv.is_open()) throw runtime_error("Cannot create output CSV: " + out);
+    csv << "graph,graph_fingerprint,sample_pct,sampled_rows,sampled_rewind_rate,choice,threshold,"
         << "t_sampling_ms,t_chosen_ms,t_total_adaptive_ms,"
         << "t_gallop_ms,t_finger_ms,t_best_oracle_ms,overhead_vs_oracle"
         << endl;
 
     for (const string& arg : graph_args) {
         CSR G = load_graph_arg(arg);
-        int n_sample = max(1, (int)(G.n * sample_pct / 100.0));
+        int n_sample = min(G.n, max(1, (int)ceil(G.n * sample_pct / 100.0)));
 
-        // échantillonnage : finger sur les n_sample premières lignes
+        // Échantillonnage déterministe et réparti sur tout l'intervalle de
+        // lignes, afin d'éviter le biais des seules premières lignes.
         FingerStats st;
-        auto t0 = chrono::high_resolution_clock::now();
+        auto t0 = chrono::steady_clock::now();
         {
             vector<long long> finger((size_t)G.n);
             for (int j = 0; j < G.n; j++) finger[j] = G.indptr[j];
-            for (int i = 0; i < n_sample; i++) {
+            for (int sample_idx = 0; sample_idx < n_sample; sample_idx++) {
+                int i = (int)(((long long)sample_idx * G.n) / n_sample);
                 long long rb = G.indptr[i], re = G.indptr[(size_t)i + 1];
                 if (rb == re) continue;
                 int rmin = G.idx[rb];
@@ -924,7 +1025,7 @@ static void experiment_adaptive(const string& out,
                 }
             }
         }
-        auto t1 = chrono::high_resolution_clock::now();
+        auto t1 = chrono::steady_clock::now();
         double t_samp = chrono::duration<double, milli>(t1 - t0).count();
         double rr = st.queries ? (double)st.rewinds / st.queries : 0;
         bool choose_finger = rr < threshold;
@@ -933,8 +1034,10 @@ static void experiment_adaptive(const string& out,
         double t_fin = bench_ms([&]{ g_sink += tri_edge(G, 2, true, 1); }, runs);
         double t_chosen = choose_finger ? t_fin : t_gal;
         double t_oracle = min(t_gal, t_fin);
+        if (t_oracle <= 0.0) throw runtime_error("non-positive adaptive timing");
 
-        csv << arg << "," << sample_pct << "," << rr << ","
+        csv << arg << "," << structure_fingerprint(G) << ","
+            << sample_pct << "," << n_sample << "," << rr << ","
             << (choose_finger ? "finger" : "gallop") << "," << threshold << ","
             << t_samp << "," << t_chosen << "," << (t_samp + t_chosen) << ","
             << t_gal << "," << t_fin << "," << t_oracle << ","
@@ -946,6 +1049,7 @@ static void experiment_adaptive(const string& out,
              << " adaptatif_total=" << (t_samp + t_chosen) << endl;
     }
     csv.close();
+    if (!csv) throw runtime_error("Failed while writing output CSV: " + out);
     cout << "Sauvegarde: " << out << endl;
 }
 
@@ -957,7 +1061,7 @@ int main(int argc, char* argv[]) {
     if (argc < 2) {
         cerr << "Usage:\n"
              << "  " << argv[0] << " verify\n"
-             << "  " << argv[0] << " fullspgemm <out.csv> [n=2048] [trials=3] [runs=3]\n"
+             << "  " << argv[0] << " fullspgemm <out.csv> [n=2048] [trials=3] [runs=3] [--max-band W]\n"
              << "  " << argv[0] << " triangles <out.csv> [--runs R] [--threads T] <graphe...>\n"
              << "  " << argv[0] << " adaptive  <out.csv> [--sample-pct P] [--threshold S] <graphe...>\n"
              << "graphe: fichier.txt | fichier.mtx | gen:er:n:deg | gen:ba:n:m | gen:band:n:w\n";
@@ -969,19 +1073,38 @@ int main(int argc, char* argv[]) {
             experiment_verify();
         } else if (cmd == "fullspgemm") {
             if (argc < 3) throw runtime_error("fullspgemm: <out.csv> requis");
-            int n = argc >= 4 ? stoi(argv[3]) : 2048;
-            int trials = argc >= 5 ? stoi(argv[4]) : 3;
-            int runs = argc >= 6 ? stoi(argv[5]) : 3;
-            experiment_fullspgemm(argv[2], n, trials, runs);
+            int n = 2048, trials = 3, runs = 3, max_band = 512;
+            vector<string> positional;
+            for (int i = 3; i < argc; ++i) {
+                string a = argv[i];
+                if (a == "--max-band") {
+                    if (i + 1 >= argc) throw runtime_error("--max-band requires a value");
+                    max_band = stoi(argv[++i]);
+                } else if (a.rfind("--", 0) == 0) {
+                    throw runtime_error("unknown fullspgemm option: " + a);
+                } else positional.push_back(a);
+            }
+            if (positional.size() > 3)
+                throw runtime_error("fullspgemm accepts at most n, trials, runs");
+            if (positional.size() >= 1) n = stoi(positional[0]);
+            if (positional.size() >= 2) trials = stoi(positional[1]);
+            if (positional.size() >= 3) runs = stoi(positional[2]);
+            experiment_fullspgemm(argv[2], n, trials, runs, max_band);
         } else if (cmd == "triangles") {
             if (argc < 4) throw runtime_error("triangles: <out.csv> <graphe...> requis");
             int runs = 3, T = 1;
             vector<string> graphs;
             for (int i = 3; i < argc; i++) {
                 string a = argv[i];
-                if (a == "--runs" && i + 1 < argc) runs = stoi(argv[++i]);
-                else if (a == "--threads" && i + 1 < argc) T = stoi(argv[++i]);
-                else graphs.push_back(a);
+                if (a == "--runs") {
+                    if (i + 1 >= argc) throw runtime_error("--runs requires a value");
+                    runs = stoi(argv[++i]);
+                } else if (a == "--threads") {
+                    if (i + 1 >= argc) throw runtime_error("--threads requires a value");
+                    T = stoi(argv[++i]);
+                } else if (a.rfind("--", 0) == 0) {
+                    throw runtime_error("unknown triangles option: " + a);
+                } else graphs.push_back(a);
             }
             experiment_triangles(argv[2], graphs, runs, T);
         } else if (cmd == "adaptive") {
@@ -991,10 +1114,18 @@ int main(int argc, char* argv[]) {
             vector<string> graphs;
             for (int i = 3; i < argc; i++) {
                 string a = argv[i];
-                if (a == "--sample-pct" && i + 1 < argc) pct = stod(argv[++i]);
-                else if (a == "--threshold" && i + 1 < argc) thr = stod(argv[++i]);
-                else if (a == "--runs" && i + 1 < argc) runs = stoi(argv[++i]);
-                else graphs.push_back(a);
+                if (a == "--sample-pct") {
+                    if (i + 1 >= argc) throw runtime_error("--sample-pct requires a value");
+                    pct = stod(argv[++i]);
+                } else if (a == "--threshold") {
+                    if (i + 1 >= argc) throw runtime_error("--threshold requires a value");
+                    thr = stod(argv[++i]);
+                } else if (a == "--runs") {
+                    if (i + 1 >= argc) throw runtime_error("--runs requires a value");
+                    runs = stoi(argv[++i]);
+                } else if (a.rfind("--", 0) == 0) {
+                    throw runtime_error("unknown adaptive option: " + a);
+                } else graphs.push_back(a);
             }
             experiment_adaptive(argv[2], graphs, pct, thr, runs);
         } else {

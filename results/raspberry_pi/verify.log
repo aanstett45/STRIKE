@@ -2,11 +2,11 @@
 (1 = identique a la reference, 0 = DIVERGENT)
 
 -- SpGEMM complet (reference: Gustavson SPA) --
-random n=512 d=0.02 b=0.6    stateless=1 NON_GARDE=0(diff=45592, survie=0.41969%) garde=1 garde+gallop=1
-band n=1024 w=16             stateless=1 NON_GARDE=0(diff=30255, survie=51.2772%) garde=1 garde+gallop=1
-random n=2048 d=0.01 b=0.6   stateless=1 NON_GARDE=0(diff=704747, survie=0.0703314%) garde=1 garde+gallop=1
+random n=512 d=0.02 b=0.6    fpA=6355167ee4b9ce8f fpB=422484e9fc6f82ad stateless=1 NON_GARDE=0(diff=45391, survie=0.759233%) garde=1 garde+gallop=1
+band n=1024 w=16             fpA=b3f888ce0d70b23d fpB=b3f888ce0d70b23d stateless=1 NON_GARDE=0(diff=30255, survie=51.2772%) garde=1 garde+gallop=1
+random n=2048 d=0.01 b=0.6   fpA=43f00c81ebdaf5d0 fpB=8f2e7e02ca145649 stateless=1 NON_GARDE=0(diff=736847, survie=0.104397%) garde=1 garde+gallop=1
 
 -- Triangles (cross-check: Gustavson masque vs edge-merge) --
-er n=2000 deg=20       T=1298       merge=1 gallop=1 finger=1 finger_par=1 cf=1 cf_finger=1  [OK]
-ba n=2000 m=8          T=4280       merge=1 gallop=1 finger=1 finger_par=1 cf=1 cf_finger=1  [OK]
-band n=2000 w=12       T=131428     merge=1 gallop=1 finger=1 finger_par=1 cf=1 cf_finger=1  [OK]
+er n=2000 deg=20       fp=4e1dcba64b285644 T=1298       merge=1 gallop=1 finger=1 finger_par=1 cf=1 cf_finger=1  [OK]
+ba n=2000 m=8          fp=534a6a75811bc634 T=4601       merge=1 gallop=1 finger=1 finger_par=1 cf=1 cf_finger=1  [OK]
+band n=2000 w=12       fp=4e1049953e87aa29 T=131428     merge=1 gallop=1 finger=1 finger_par=1 cf=1 cf_finger=1  [OK]

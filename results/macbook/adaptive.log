@@ -1,0 +1,14 @@
+=== ADAPTIVE (rewind rate comme predicteur) ===
+    [spread] min=39.4499 med=39.9108 max=40.4642 range_over_median=0.025415
+    [spread] min=48.7768 med=49.2988 max=50.4854 range_over_median=0.0346577
+data/roadNet-CA.txt | rr_echantillon=0.00270787 -> finger | gallop=39.9108 finger=49.2988 adaptatif_total=53.6892
+    [spread] min=56.7781 med=57.4754 max=58.1843 range_over_median=0.024467
+    [spread] min=59.247 med=60.4061 max=60.9939 range_over_median=0.0289195
+data/email-Enron.txt | rr_echantillon=0.0978065 -> gallop | gallop=57.4754 finger=60.4061 adaptatif_total=58.253
+    [spread] min=6.52088 med=6.5375 max=6.72054 range_over_median=0.0305418
+    [spread] min=7.60096 med=7.69617 max=7.799 range_over_median=0.0257324
+gen:band:20000:16 | rr_echantillon=0 -> finger | gallop=6.5375 finger=7.69617 adaptatif_total=7.89504
+    [spread] min=23.6068 med=23.8682 max=24.5014 range_over_median=0.0374836
+    [spread] min=25.125 med=25.442 max=25.5377 range_over_median=0.0162199
+gen:ba:20000:8 | rr_echantillon=0.0721863 -> gallop | gallop=23.8682 finger=25.442 adaptatif_total=24.8665
+Sauvegarde: results/macbook/adaptive.csv

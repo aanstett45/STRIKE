@@ -1,0 +1,5 @@
+graph,graph_fingerprint,sample_pct,sampled_rows,sampled_rewind_rate,choice,threshold,t_sampling_ms,t_chosen_ms,t_total_adaptive_ms,t_gallop_ms,t_finger_ms,t_best_oracle_ms,overhead_vs_oracle
+data/roadNet-CA.txt,c0d6898a551b5f71,2,39305,0.00270787,finger,0.05,4.39033,49.2988,53.6892,39.9108,49.2988,39.9108,1.34523
+data/email-Enron.txt,e020b121d9c2b4d3,2,734,0.0978065,gallop,0.05,0.777583,57.4754,58.253,57.4754,60.4061,57.4754,1.01353
+gen:band:20000:16,b30d25a2bad1087d,2,400,0,finger,0.05,0.198875,7.69617,7.89504,6.5375,7.69617,6.5375,1.20765
+gen:ba:20000:8,fa917d3836e2f882,2,400,0.0721863,gallop,0.05,0.998292,23.8682,24.8665,23.8682,25.442,23.8682,1.04183

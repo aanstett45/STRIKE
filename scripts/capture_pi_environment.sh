@@ -3,21 +3,32 @@ set -euo pipefail
 
 repo_root="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 cd "$repo_root"
-mkdir -p results/raspberry_pi
-out=results/raspberry_pi/environment.txt
+out="${1:-results/raspberry_pi/environment.txt}"
+mkdir -p "$(dirname "$out")"
+
+if command -v sha256sum >/dev/null 2>&1; then
+  source_hash="$(sha256sum src/finger_spgemm.cpp | awk '{print $1}')"
+else
+  source_hash="$(shasum -a 256 src/finger_spgemm.cpp | awk '{print $1}')"
+fi
+commit="not available"
+if git rev-parse --is-inside-work-tree >/dev/null 2>&1; then
+  commit="$(git rev-parse HEAD)"
+fi
+expected_governor="${PI_GOVERNOR:-performance}"
 
 {
   echo "Measurement environment — Raspberry Pi"
   echo "======================================"
   echo
-  echo "Known configuration"
-  echo "-------------------"
-  echo "Model: Raspberry Pi 4 Model B"
-  echo "Memory: 4 GB"
+  echo "Capture time (UTC)"
+  echo "------------------"
+  date -u '+%Y-%m-%dT%H:%M:%SZ'
   echo
-  echo "Capture time"
-  echo "------------"
-  date
+  echo "Source identity"
+  echo "---------------"
+  echo "Git commit: $commit"
+  echo "SHA-256 src/finger_spgemm.cpp: $source_hash"
   echo
   echo "Device model"
   echo "------------"
@@ -28,9 +39,10 @@ out=results/raspberry_pi/environment.txt
   echo "----------------"
   cat /etc/os-release || true
   echo
-  echo "uname -a"
-  echo "--------"
-  uname -a
+  echo "Kernel (hostname omitted)"
+  echo "-------------------------"
+  uname -smr
+  echo "Userland bits: $(getconf LONG_BIT 2>/dev/null || echo unknown)"
   echo
   echo "lscpu"
   echo "-----"
@@ -46,12 +58,13 @@ out=results/raspberry_pi/environment.txt
   echo
   echo "CPU governors"
   echo "-------------"
+  echo "Expected CPU governor: $expected_governor"
   for f in /sys/devices/system/cpu/cpu*/cpufreq/scaling_governor; do
     [ -r "$f" ] && printf '%s: %s\n' "$f" "$(cat "$f")"
   done
   echo
-  echo "Throttling status"
-  echo "-----------------"
+  echo "Throttling and temperature"
+  echo "--------------------------"
   if command -v vcgencmd >/dev/null 2>&1; then
     vcgencmd get_throttled
     vcgencmd measure_temp
@@ -65,11 +78,12 @@ out=results/raspberry_pi/environment.txt
   echo
   echo "Measurement conditions"
   echo "----------------------"
-  echo "CPU governor required: performance"
-  echo "OMP_SCHEDULE=static"
-  echo "OMP_PROC_BIND=close"
-  echo "OMP_PLACES=cores"
-  echo "Power supply and cooling notes: EDIT THIS LINE BEFORE RELEASE"
+  echo "OMP_SCHEDULE=${OMP_SCHEDULE:-static}"
+  echo "OMP_PROC_BIND=${OMP_PROC_BIND:-close}"
+  echo "OMP_PLACES=${OMP_PLACES:-cores}"
+  echo "Power supply: ${PI_POWER_NOTES:-not provided}"
+  echo "Cooling: ${PI_COOLING_NOTES:-not provided}"
+  echo "Notes: ${MEASUREMENT_NOTES:-not provided}"
 } > "$out"
 
 printf 'Wrote %s\n' "$out"

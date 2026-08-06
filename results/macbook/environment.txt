@@ -1,20 +1,17 @@
 Measurement environment — MacBook
 =================================
 
-Known configuration
--------------------
-Model: MacBook Pro
-SoC: Apple M4 Pro
-Memory: 24 GB
-Operating system: macOS 15.7.4
-Build: 24G517
+Capture time (UTC)
+------------------
+2026-08-05T12:36:44Z
 
-Capture time
-------------
-Tue Jul 21 13:38:54 CEST 2026
+Source identity
+---------------
+Git commit: not available
+SHA-256 src/finger_spgemm.cpp: da98b5fab99935ba5bfefdefea751fe64320c80c00aa5741c542f72640a62b0c
 
-system_profiler SPHardwareDataType SPSoftwareDataType
-----------------------------------------------------
+Hardware and operating system (privacy-filtered)
+------------------------------------------------
 Hardware:
 
     Hardware Overview:
@@ -27,7 +24,7 @@ Hardware:
       Memory: 24 GB
       System Firmware Version: 13822.81.10
       OS Loader Version: 11881.140.96
-      Activation Lock Status: Enabled
+      Serial Number (system): GRKJXX4GJK
 
 Software:
 
@@ -37,16 +34,14 @@ Software:
       Kernel Version: Darwin 24.6.0
       Boot Volume: Macintosh HD
       Boot Mode: Normal
-      Computer Name: Alexandre’s MacBook Pro
-      User Name: Alexandre ANSTETT (aaciad)
       Secure Virtual Memory: Enabled
       System Integrity Protection: Enabled
-      Time since boot: 40 days, 3 hours, 14 minutes
+      Time since boot: 55 days, 4 hours, 11 minutes
 
 
-uname -a
---------
-Darwin le2i-ciad-94.pu6306.rp.u-bourgogne.fr 24.6.0 Darwin Kernel Version 24.6.0: Mon Jan 19 22:01:58 PST 2026; root:xnu-11417.140.69.708.3~1/RELEASE_ARM64_T6041 arm64
+Kernel (hostname omitted)
+-------------------------
+Darwin 24.6.0 arm64
 
 clang++ --version
 -----------------
@@ -67,4 +62,5 @@ Measurement conditions
 ----------------------
 Power: connected to AC power
 Sleep: disabled during measurements
-Default schedule: OMP_SCHEDULE=static
+OMP_SCHEDULE=static
+Notes: not provided
