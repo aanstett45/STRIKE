@@ -1,4 +1,4 @@
-[![DOI](https://zenodo.org/badge/1113783061.svg)](https://doi.org/10.5281/zenodo.21507449)
+[![DOI](https://zenodo.org/badge/1113783061.svg)](https://doi.org/10.5281/zenodo.21819709)
 
 # Cross-row Pointer Persistence in Merge-based Sparse Matrix Products
 
